@@ -1,0 +1,32 @@
+{
+  "name": "snake-test",
+  "version": "1.0.0",
+  "description": "The Snake sample in JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --public-url=$BASE_URL --no-cache"
+  },
+  "author": "Igor Bezsmertnyi <bezsmertnyi.igor@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igorbezsmertnyi/snake-sample.git"
+  },
+  "keywords": [
+    "Snake",
+    "SnakeJS",
+    "Snake",
+    "js",
+    "snake",
+    "game",
+    "game"
+  ],
+  "bugs": {
+    "url": "https://github.com/igorbezsmertnyi/snake-sample/issues"
+  },
+  "homepage": "https://github.com/igorbezsmertnyi/snake-sample#readme",
+  "dependencies": {
+    "parcel-bundler": "^1.10.3"
+  }
+}
