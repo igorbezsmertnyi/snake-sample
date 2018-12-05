@@ -1,0 +1,83 @@
+version: 2.1
+
+jobs:
+  install:
+    docker:
+      - image: circleci/node:8.10
+    working_directory: ~/snake-sample
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - javascript-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: javascript-dependencies-{{ checksum "yarn.lock" }}
+
+  build:
+    docker:
+      - image: circleci/node:8.10
+    working_directory: ~/snake-sample
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - javascript-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Build project
+          command: npm run build
+      - save_cache:
+          paths:
+            - dist
+          key: static-assets-{{ checksum "dist/index.html" }}
+
+  deploy:
+    docker:
+      - image: circleci/node:8.10
+    working_directory: ~/snake-sample
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - static-assets-
+      - run:
+          name: Config Github user
+          command: |
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_NAME
+      - run:
+          name: Copy CI config
+          command: cp -r .circleci/ dist/.circleci
+
+      - run:
+          name: Create commit
+          command: |
+            git add -f dist
+            git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}"
+      - run:
+          name: Publish project
+          command: git push https://${GITHUB_TOKEN}@github.com/igorbezsmertnyi/snake-sample `git subtree split --prefix dist master`:refs/heads/gh-pages --force &> /dev/null
+
+workflows:
+  main:
+    jobs:
+      - install:
+          filters:
+            branches:
+              only: master
+      - build:
+          filters:
+            branches:
+              only: master
+          requires:
+            - install
+      - deploy:
+          filters:
+            branches:
+              only: master
+          requires:
+            - build
